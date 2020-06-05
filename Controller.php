@@ -35,7 +35,7 @@ class Controller extends \yii\web\Controller
         
         if (!$model)
         {
-            throw Yii::createObject($this->notFoundHttpExceptionClass, ['The requested page does not exist.']);
+            $this->throwNewFoundHttpException();
         }
 
         return $model;
