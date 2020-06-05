@@ -6,6 +6,7 @@ use Yii;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 use Webmozart\Assert\Assert;
+use denis909\yii\ModelException;
 
 class Controller extends \yii\web\Controller
 {
@@ -15,6 +16,8 @@ class Controller extends \yii\web\Controller
     public $modelClass;
 
     public $assertClass = Assert::class;
+
+    public $modelExceptionClass = ModelException::class;
 
     public function findModel($id, $modelClass = null)
     {
