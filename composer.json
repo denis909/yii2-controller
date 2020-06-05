@@ -5,5 +5,8 @@
         "psr-4": {
             "denis909\\yii\\" : ""
         }
+    },
+    "require": {
+        "webmozart/assert" : "*"
     }
 }

@@ -5,18 +5,29 @@ namespace denis909\yii;
 use Yii;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
+use Webmozart\Assert\Assert;
 
 class Controller extends \yii\web\Controller
 {
 
     public $notFoundHttpExceptionClass = NotFoundHttpException::class;
 
+    public $modelClass;
+
+    public $assertClass = Assert::class;
+
     public function findModel($id, $modelClass = null)
     {
+        $assertClass = $this->assertClass;
+
         if (!$modelClass)
         {
             $modelClass = $this->modelClass;
         }
+
+        $assertClass::notEmpty($modelClass);
+
+        $assertClass::notEmpty($id);
             
         $model = $modelClass::findOne($id);
         
