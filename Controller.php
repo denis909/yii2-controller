@@ -5,6 +5,7 @@ namespace denis909\yii;
 use Yii;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use Webmozart\Assert\Assert;
 use denis909\yii\ModelException;
 
@@ -16,6 +17,8 @@ class Controller extends \yii\web\Controller
     public $modelExceptionClass = ModelException::class;
 
     public $notFoundHttpExceptionClass = NotFoundHttpException::class;
+
+    public $forbiddenHttpExceptionClass = ForbiddenHttpException::class;
 
     public function findModel($id, $modelClass = null)
     {
@@ -62,9 +65,14 @@ class Controller extends \yii\web\Controller
         throw Yii::createObject($this->modelExceptionClass, [$model]);
     }
 
-    public function throwNotFoundHttpException($model)
+    public function throwNotFoundHttpException($message = 'The requested page does not exist.')
     {
-        throw Yii::createObject($this->notFoundHttpExceptionClass, [$model]);
+        throw Yii::createObject($this->notFoundHttpExceptionClass, [$message]);
     }
+
+    public function throwForbiddenHttpException($message = 'Access denied.')
+    {
+        throw Yii::createObject($this->forbiddenHttpExceptionClass, [$message]);
+    }    
 
 }
