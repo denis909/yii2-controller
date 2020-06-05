@@ -40,7 +40,7 @@ class Controller extends \yii\web\Controller
             }
             else
             {
-                $returnUrl = [$this->defaultAction]
+                $returnUrl = [$this->defaultAction];
             }
         }
 
