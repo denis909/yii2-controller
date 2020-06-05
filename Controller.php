@@ -3,6 +3,7 @@
 namespace denis909\yii;
 
 use Yii;
+use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
 class Controller extends \yii\web\Controller
@@ -25,6 +26,25 @@ class Controller extends \yii\web\Controller
         }
 
         return $model;
+    }
+
+    public function redirectBack($default = null)
+    {
+        $returnUrl = Yii::$app->request->get('returnUrl');
+
+        if (!$returnUrl || !Url::isRelative($returnUrl))
+        {
+            if ($default)
+            {
+                $returnUrl = $default;
+            }
+            else
+            {
+                $returnUrl = [$this->defaultAction]
+            }
+        }
+
+        return $this->redirect($returnUrl);
     }
 
 }
