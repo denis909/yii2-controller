@@ -11,26 +11,22 @@ use denis909\yii\ModelException;
 class Controller extends \yii\web\Controller
 {
 
-    public $notFoundHttpExceptionClass = NotFoundHttpException::class;
-
     public $modelClass;
-
-    public $assertClass = Assert::class;
 
     public $modelExceptionClass = ModelException::class;
 
+    public $notFoundHttpExceptionClass = NotFoundHttpException::class;
+
     public function findModel($id, $modelClass = null)
     {
-        $assertClass = $this->assertClass;
-
         if (!$modelClass)
         {
             $modelClass = $this->modelClass;
         }
 
-        $assertClass::notEmpty($modelClass);
+        Assert::notEmpty($modelClass);
 
-        $assertClass::notEmpty($id);
+        Assert::notEmpty($id);
             
         $model = $modelClass::findOne($id);
         
@@ -59,6 +55,16 @@ class Controller extends \yii\web\Controller
         }
 
         return $this->redirect($returnUrl);
+    }
+
+    public function throwModelException($model)
+    {
+        throw Yii::createObject($this->modelExceptionClass, [$model]);
+    }
+
+    public function throwNotFoundHttpException($model)
+    {
+        throw Yii::createObject($this->notFoundHttpExceptionClass, [$model]);
     }
 
 }
