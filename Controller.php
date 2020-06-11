@@ -3,11 +3,11 @@
 namespace denis909\yii;
 
 use Yii;
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
-use yii\web\ForbiddenHttpException;
 use Webmozart\Assert\Assert;
-use denis909\yii\ModelException;
 
 class Controller extends \yii\web\Controller
 {
@@ -15,6 +15,10 @@ class Controller extends \yii\web\Controller
     public $userComponent = 'user';
 
     public $modelClass;
+
+    public $postActions = [];
+
+    public $roles = [];
 
     public $notFoundMessage = 'Page not found.';
 
@@ -58,12 +62,46 @@ class Controller extends \yii\web\Controller
         return $this->redirect($returnUrl);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function goBack($defaultUrl = null)
     {
         return Yii::$app->getResponse()->redirect(Yii::$app->{$this->userComponent}->getReturnUrl($defaultUrl));
-    }    
+    }
+
+    public function behaviors()
+    {
+        $return = [];
+
+        if ($this->roles)
+        {
+            $return['access']['rules'] = [
+                [
+                    'allow' => true,
+                    'roles' => $this->roles
+                ]
+            ];
+        }
+
+        if ($this->postActions)
+        {
+            foreach($this->postActions as $action)
+            {
+                $return['verbs']['actions'][$action][] = 'post';
+            }
+        }
+
+        if (array_key_exists('verbs', $return))
+        {
+            $return['verbs']['class'] = VerbFilter::class;
+        }
+
+        if (array_key_exists('access', $return))
+        {
+            $return['access']['class'] = AccessControl::class;
+
+            $return['access']['user'] = $this->userComponent;
+        }
+
+        return $return;
+    }
 
 }

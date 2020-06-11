@@ -7,7 +7,6 @@
         }
     },
     "require": {
-        "denis909/yii2-model-exception": "*",
         "webmozart/assert" : "*"
     }
 }
