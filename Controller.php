@@ -12,13 +12,11 @@ use denis909\yii\ModelException;
 class Controller extends \yii\web\Controller
 {
 
+    public $userComponent = 'user';
+
     public $modelClass;
 
-    public $modelExceptionClass = ModelException::class;
-
-    public $notFoundHttpExceptionClass = NotFoundHttpException::class;
-
-    public $forbiddenHttpExceptionClass = ForbiddenHttpException::class;
+    public $notFoundMessage = 'Page not found.';
 
     public function findModel($id, $modelClass = null)
     {
@@ -35,7 +33,7 @@ class Controller extends \yii\web\Controller
         
         if (!$model)
         {
-            $this->throwNewFoundHttpException();
+            throw new NotFoundHttpException($this->notFoundMessage);
         }
 
         return $model;
@@ -60,19 +58,12 @@ class Controller extends \yii\web\Controller
         return $this->redirect($returnUrl);
     }
 
-    public function throwModelException($model)
+    /**
+     * {@inheritdoc}
+     */
+    public function goBack($defaultUrl = null)
     {
-        throw Yii::createObject($this->modelExceptionClass, [$model]);
-    }
-
-    public function throwNotFoundHttpException($message = 'The requested page does not exist.')
-    {
-        throw Yii::createObject($this->notFoundHttpExceptionClass, [$message]);
-    }
-
-    public function throwForbiddenHttpException($message = 'Access denied.')
-    {
-        throw Yii::createObject($this->forbiddenHttpExceptionClass, [$message]);
+        return Yii::$app->getResponse()->redirect(Yii::$app->{$this->userComponent}->getReturnUrl($defaultUrl));
     }    
 
 }
