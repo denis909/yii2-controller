@@ -4,11 +4,15 @@ namespace denis909\yii;
 
 use Yii;
 use yii\web\NotFoundHttpException;
+use yii\helpers\Url;
 
 class Controller extends \yii\web\Controller
 {
 
-    public $notFoundHttpExceptionClass = NotFoundHttpException::class;
+    public function throwNotFoundHttpException($message = 'Page not found.', $class = NotFoundHttpException::class)
+    {
+        throw Yii::createObject($class, [$message]);
+    }
 
     public function findModel($id, $modelClass = null)
     {
@@ -21,10 +25,29 @@ class Controller extends \yii\web\Controller
         
         if (!$model)
         {
-            throw Yii::createObject($this->notFoundHttpExceptionClass, ['The requested page does not exist.']);
+            $this->throwNotFoundHttpException();
         }
 
         return $model;
+    }
+
+    public function redirectBack($defaultReturnUrl = null)
+    {
+        $returnUrl = Yii::$app->request->get('returnUrl');
+
+        if (!$returnUrl || !Url::isRelative($returnUrl))
+        {
+            if ($defaultReturnUrl)
+            {
+                $returnUrl = $defaultReturnUrl;
+            }
+            else
+            {
+                $returnUrl = [$this->defaultAction];
+            }
+        }
+
+        return $this->redirect($returnUrl);
     }
 
 }
