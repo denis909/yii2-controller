@@ -3,11 +3,22 @@
 namespace denis909\yii;
 
 use Yii;
-use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\helpers\Url;
+use yii\web\NotFoundHttpException;
+use denis909\yii\Assert;
 
 class Controller extends \yii\web\Controller
 {
+
+    public $userComponent = 'user';
+
+    public $modelClass;
+
+    public $postActions = [];
+
+    public $roles = [];
 
     public function throwNotFoundHttpException($message = 'Page not found.', $class = NotFoundHttpException::class)
     {
@@ -20,6 +31,10 @@ class Controller extends \yii\web\Controller
         {
             $modelClass = $this->modelClass;
         }
+
+        Assert::notEmpty($modelClass);
+
+        Assert::notEmpty($id);
             
         $model = $modelClass::findOne($id);
         
@@ -31,15 +46,15 @@ class Controller extends \yii\web\Controller
         return $model;
     }
 
-    public function redirectBack($defaultReturnUrl = null)
+    public function redirectBack($default = null)
     {
         $returnUrl = Yii::$app->request->get('returnUrl');
 
         if (!$returnUrl || !Url::isRelative($returnUrl))
         {
-            if ($defaultReturnUrl)
+            if ($default)
             {
-                $returnUrl = $defaultReturnUrl;
+                $returnUrl = $default;
             }
             else
             {
@@ -48,6 +63,48 @@ class Controller extends \yii\web\Controller
         }
 
         return $this->redirect($returnUrl);
+    }
+
+    public function goBack($defaultUrl = null)
+    {
+        return Yii::$app->getResponse()->redirect(Yii::$app->{$this->userComponent}->getReturnUrl($defaultUrl));
+    }
+
+    public function behaviors()
+    {
+        $return = [];
+
+        if ($this->roles)
+        {
+            $return['access']['rules'] = [
+                [
+                    'allow' => true,
+                    'roles' => $this->roles
+                ]
+            ];
+        }
+
+        if ($this->postActions)
+        {
+            foreach($this->postActions as $action)
+            {
+                $return['verbs']['actions'][$action][] = 'post';
+            }
+        }
+
+        if (array_key_exists('verbs', $return))
+        {
+            $return['verbs']['class'] = VerbFilter::class;
+        }
+
+        if (array_key_exists('access', $return))
+        {
+            $return['access']['class'] = AccessControl::class;
+
+            $return['access']['user'] = $this->userComponent;
+        }
+
+        return $return;
     }
 
 }
