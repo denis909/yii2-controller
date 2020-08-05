@@ -52,6 +52,11 @@ class Controller extends \yii\web\Controller
         return $model = Yii::createObject($className);
     }
 
+    public function createModelQuery($className)
+    {
+        return $className::find();
+    }    
+
     public function loadModel(Model $model, array $data = [])
     {
         return $model->load($data);
