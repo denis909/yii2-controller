@@ -67,6 +67,11 @@ class Controller extends \yii\web\Controller
         return $model->validate($attributes);
     }
 
+    public function deleteModel(Model $model)
+    {
+        return $model->delete();
+    }
+
     public function redirectBack($default = null)
     {
         $returnUrl = Yii::$app->request->get('returnUrl');
