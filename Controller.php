@@ -8,6 +8,7 @@ use yii\filters\AccessControl;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 use denis909\yii\Assert;
+use yii\base\Model;
 
 class Controller extends \yii\web\Controller
 {
@@ -44,6 +45,26 @@ class Controller extends \yii\web\Controller
         }
 
         return $model;
+    }
+
+    public function createModel($className)
+    {
+        return $model = Yii::createObject($className);
+    }
+
+    public function loadModel(Model $model, array $data = [])
+    {
+        return $model->load($data);
+    }
+
+    public function saveModel(Model $model, bool $validate = true, array $attributes = null)
+    {
+        return $model->save($validate, $attributes);
+    }
+
+    public function validateModel(Model $model, $attributes = null)
+    {
+        return $model->validate($attributes);
     }
 
     public function redirectBack($default = null)
