@@ -3,6 +3,7 @@
 namespace denis909\yii;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
@@ -15,6 +16,8 @@ class Controller extends \yii\web\Controller
     public $postActions = [];
 
     public $roles = [];
+
+    public $access = [];
 
     public function redirectBack($default = null)
     {
@@ -42,7 +45,21 @@ class Controller extends \yii\web\Controller
 
     public function behaviors()
     {
-        $return = [];
+        $return = [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => []
+            ],
+            'access' => ArrayHelper::merge(
+                [
+                    'class' => AccessControl::class,
+                    'user' => $this->userComponent,
+                    'rules' => [],
+                    'only' => []
+                ],
+                $this->access
+            )
+        ];
 
         if ($this->roles)
         {
@@ -54,25 +71,20 @@ class Controller extends \yii\web\Controller
             ];
         }
 
-        if ($this->postActions)
+        foreach($this->postActions as $action)
         {
-            foreach($this->postActions as $action)
-            {
-                $return['verbs']['actions'][$action][] = 'post';
-            }
+            $return['verbs']['actions'][$action][] = 'POST';
+        }        
+
+        if (count($return['access']['rules']) == 0)
+        {
+            unset($return['access']);
         }
 
-        if (array_key_exists('verbs', $return))
+        if (count($return['verbs']['actions']) == 0)
         {
-            $return['verbs']['class'] = VerbFilter::class;
+            unset($return['verbs']);
         }
-
-        if (array_key_exists('access', $return))
-        {
-            $return['access']['class'] = AccessControl::class;
-        }
-
-        $return['access']['user'] = $this->userComponent;
 
         return $return;
     }
