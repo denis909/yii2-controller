@@ -21,11 +21,11 @@ class Controller extends \yii\web\Controller
 
     public function goBack($defaultUrl = null)
     {
-        $returnUrl = Yii::$app->request->get('returnUrl');
+        $backUrl = Yii::$app->request->get('backUrl');
 
-        if ($returnUrl && Url::isRelative($returnUrl))
+        if ($backUrl && Url::isRelative($backUrl))
         {
-            return $this->redirect($returnUrl);
+            return $this->redirect($backUrl);
         }
 
         return Yii::$app->getResponse()->redirect(Yii::$app->{$this->userComponent}->getReturnUrl($defaultUrl));
