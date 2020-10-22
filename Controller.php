@@ -19,27 +19,15 @@ class Controller extends \yii\web\Controller
 
     public $access = [];
 
-    public function redirectBack($default = null)
+    public function goBack($defaultUrl = null)
     {
         $returnUrl = Yii::$app->request->get('returnUrl');
 
-        if (!$returnUrl || !Url::isRelative($returnUrl))
+        if ($returnUrl && Url::isRelative($returnUrl))
         {
-            if ($default)
-            {
-                $returnUrl = $default;
-            }
-            else
-            {
-                $returnUrl = [$this->defaultAction];
-            }
+            return $this->redirect($returnUrl);
         }
 
-        return $this->redirect($returnUrl);
-    }
-
-    public function goBack($defaultUrl = null)
-    {
         return Yii::$app->getResponse()->redirect(Yii::$app->{$this->userComponent}->getReturnUrl($defaultUrl));
     }
 
