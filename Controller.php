@@ -3,6 +3,7 @@
 namespace denis909\yii;
 
 use Yii;
+use yii\web\NotFoundHttpException;
 use yii\helpers\ArrayHelper;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -18,6 +19,31 @@ class Controller extends \yii\web\Controller
     public $roles = [];
 
     public $access = [];
+
+    public $modelClass;
+
+    public $notFoundHttpExceptionClass = NotFoundHttpException::class;
+
+    public function findModel($id, $modelClass = null)
+    {
+        if (!$modelClass)
+        {
+            $modelClass = $this->modelClass;
+        }
+
+        Assert::notEmpty($modelClass);
+
+        Assert::notEmpty($id);
+            
+        $model = $modelClass::findOne($id);
+        
+        if (!$model)
+        {
+            throw Yii::createObject($this->notFoundHttpExceptionClass, ['Page not found.']);
+        }
+
+        return $model;
+    }    
 
     public function goBack($defaultUrl = null)
     {
