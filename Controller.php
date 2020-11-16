@@ -56,10 +56,16 @@ class Controller extends \yii\web\Controller
 
         if (!$defaultUrl)
         {
-            $defaultUrl = $this->defaultAction;
+            $defaultUrl = Url::toRoute([$this->defaultAction]);
         }
 
-        return Yii::$app->getResponse()->redirect(Yii::$app->{$this->userComponent}->getReturnUrl($defaultUrl));
+        $returnUrl = Yii::$app->{$this->userComponent}->getReturnUrl($defaultUrl);
+
+        $return = Yii::$app->getResponse()->redirect($returnUrl);
+    
+        Yii::$app->{$this->userComponent}->setReturnUrl(null);
+
+        return $return;
     }
 
     public function behaviors()
